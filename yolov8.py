@@ -8,16 +8,16 @@ cap = cv2.VideoCapture(video_path)
 
 
 while cap.isOpened():
-    siccess, frame = cap.read()
+    success, frame = cap.read()
     
     if success:
-        retults = model(frame)
+        results = model(frame)
         
-        annotate_frame = results[0].plot()
+        annotated_frame = results[0].plot()
         
-        cv2.imshow("YOLOv8 Inference", annotates_frame)
+        cv2.imshow("YOLOv8 Inference", annotated_frame)
         
-        if cv2.watiKey(1) & 0xFF == ord("q"):
+        if cv2.waitKey(1) & 0xFF == ord("q"): #
             break
     else:
         break
