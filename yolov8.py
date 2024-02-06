@@ -42,17 +42,17 @@ def predict(video_path, model_name):
             cv2.imshow("Occupancy Grid", occupancy_grid)
             cv2.imshow("YOLOv8 Inference", annotated_frame)
             
-            if cv2.waitKey(1) & 0xFF == ord("q"): # press q to quit the program
-                break
+            # if cv2.waitKey(1) & 0xFF == ord("q"): # press q to quit the program
+            #     break
+            
         else:
             break
 
     ##########################
     # Must have these dont touch
-    ##########################
     cap.release()
     cv2.destroyAllWindows()
-
+    ##########################
 
 if __name__ == "__main__":
     # Check if the script is run as the main program
