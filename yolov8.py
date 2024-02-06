@@ -1,9 +1,10 @@
 import cv2
 from ultralytics import YOLO
+import numpy as np
 
 model = YOLO('yolov8.pt') # specify the model you would like to use
 
-video_path = "comp23_2.mp4" #make 0 if using webcam
+video_path = "test1.mp4" #make 0 if using webcam
 cap = cv2.VideoCapture(video_path)
 
 
@@ -15,12 +16,24 @@ while cap.isOpened():
         
         annotated_frame = results[0].plot() # 
         
-        for results in results:
-            masks = results.masks  # masks gives us the coordinates for drivable area
-            print(masks)
-            break
-        
-        
+        # for results in results:
+        #     masks = results.masks  # masks gives us the coordinates for drivable area
+        #     print(masks)
+        #     break
+        image_height = annotated_frame.shape[0]
+        image_width = annotated_frame.shape[1]
+        occupancy_grid = np.zeros((image_height, image_width))
+        for r in results:
+            for segment in r.masks.xy:
+                for pixel in segment:
+                    print(pixel)
+                    x = pixel[0].astype(np.uint16)
+                    y = pixel[1].astype(np.uint16)
+                    print(x)
+                    # Ensure the coordinates are within the image dimensions
+                    if 0 <= x < image_width and 0 <= y < image_height:
+                        occupancy_grid[y, x] = 1
+        cv2.imshow("Occupancy Grid", occupancy_grid)
         cv2.imshow("YOLOv8 Inference", annotated_frame)
         
         if cv2.waitKey(1) & 0xFF == ord("q"): # press q to quit the program
