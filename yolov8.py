@@ -10,7 +10,7 @@ def predict(video_path, model_name):
     cap = cv2.VideoCapture(video_path)
 
 
-    while cap.isOpened():
+    while cap.isOpened() and cv2.waitKey(1) & 0xFF != ord("q"):
         success, frame = cap.read()
         
         if success:
