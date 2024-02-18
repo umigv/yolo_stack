@@ -34,11 +34,12 @@ def predict(video_path, lane_model, hole_model=None):
                     for segment in r.masks.xy:
                         segment_array = np.array([segment], dtype=np.int32)
                         cv2.fillPoly(occupancy_grid, [segment_array], color=(255, 255, 255))
-            for r in hole_results:
-                if r.masks is not None:
-                    for segment in r.masks.xy:
-                        segment_array = np.array([segment], dtype=np.int32)
-                        cv2.fillPoly(occupancy_grid, [segment_array], color=(0, 0, 0))
+            if hole_results is not None:
+                for r in hole_results:
+                    if r.boxes is not None:
+                        for segment in r.boxes.xyxy:
+                            segment_array = np.array([segment], dtype=np.int32)
+                            cv2.fillPoly(occupancy_grid, [segment_array], color=(0, 0, 0))
 
             summed_grid = np.sum(occupancy_grid, axis=2)
 
