@@ -37,9 +37,13 @@ def predict(video_path, lane_model, hole_model=None):
             if hole_results is not None:
                 for r in hole_results:
                     if r.boxes is not None:
-                        for segment in r.boxes.xyxy:
-                            segment_array = np.array([segment], dtype=np.int32)
-                            cv2.fillPoly(occupancy_grid, [segment_array], color=(0, 0, 0))
+                        for segment in r.boxes.xyxyn:
+                            x_min, y_min, x_max, y_max = segment
+                            vertices = np.array([[x_min, y_min], 
+                                                [x_max, y_min], 
+                                                [x_max, y_max], 
+                                                [x_min, y_max]], dtype=np.int32)
+                            cv2.fillPoly(occupancy_grid, [vertices], color=(0, 0, 0))
 
             summed_grid = np.sum(occupancy_grid, axis=2)
 
@@ -47,6 +51,7 @@ def predict(video_path, lane_model, hole_model=None):
             binary_grid = np.array(np.where(summed_grid == 0, 0, 1))
 
             cv2.imshow("Lane Lines", occupancy_grid)
+            cv2.imshow("Regular Frame", frame)
             # if hole_model is not None:
             #     cv2.imshow("Potholes", hole_annotated_frame)
             
