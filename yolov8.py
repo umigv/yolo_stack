@@ -40,8 +40,11 @@ def predict(video_path, lane_model, hole_model=None):
                         segment_array = np.array([segment], dtype=np.int32)
                         cv2.fillPoly(occupancy_grid, [segment_array], color=(0, 0, 0))
 
+            summed_grid = np.sum(occupancy_grid, axis=2)
 
-                            
+            # BINARY GRID TO SEND TO NAV
+            binary_grid = np.array(np.where(summed_grid == 0, 0, 1))
+
             cv2.imshow("Lane Lines", occupancy_grid)
             # if hole_model is not None:
             #     cv2.imshow("Potholes", hole_annotated_frame)
@@ -50,7 +53,7 @@ def predict(video_path, lane_model, hole_model=None):
                 break
         else:
             break
-
+        
     ##########################
     # Must have these dont touch
     ##########################
