@@ -2,6 +2,7 @@ import cv2
 from ultralytics import YOLO
 import numpy as np
 import sys
+import matplotlib.pyplot as plt
 
 def predict(video_path, lane_model, hole_model=None):
 
@@ -47,15 +48,16 @@ def predict(video_path, lane_model, hole_model=None):
                             cv2.fillPoly(occupancy_grid, [vertices], color=(0, 0, 0))
 
 
-            cv2.imshow("Lane Lines", occupancy_grid)
-            cv2.imshow("YOLOv8 Inference", hole_annotated_frame)
+            # cv2.imshow("Lane Lines", occupancy_grid)
+            # cv2.imshow("YOLOv8 Inference", hole_annotated_frame)
             ##################For Nav Output not necessary for running
-            # summed_grid = np.sum(occupancy_grid, axis=2)
+            summed_grid = np.sum(occupancy_grid, axis=2)
 
             # BINARY GRID TO SEND TO NAV
-            # binary_grid = np.array(np.where(summed_grid == 0, 0, 1))
+            binary_grid = np.array(np.where(summed_grid == 0, 0, 1))
             #################################
-            
+            plt.imshow(binary_grid, cmap='binary_r')
+            plt.show()
             # if hole_model is not None:
             #     cv2.imshow("Potholes", hole_annotated_frame)
             
