@@ -18,57 +18,29 @@ def predict(video_path, lane_model, hole_model=None):
         success, frame = cap.read()
         
         if success:
-            # print("here1")
-            lane_results = lane_model(frame) # this makes a prediction on a single frame of video
-            hole_results = hole_model(frame) if hole_model is not None else None
-            lane_annotated_frame = lane_results[0].plot() # 
-            hole_annotated_frame = hole_results[0].plot() if hole_model is not None else None
-            # print(lane_results[0])
+            r_lane = lane_model.predict(frame, conf=0.25)[0] # this makes a prediction on a single frame of video
+            r_hole = hole_model.predict(frame, conf=0.25)[0] if hole_model is not None else None
+            lane_annotated_frame = r_lane.plot() # 
+            hole_annotated_frame = r_hole.plot() if hole_model is not None else None
             
-            # for results in results:
-            #     masks = results.masks  # masks gives us the coordinates for drivable area
-            #     print(masks)
-            #     break
-            # print(f"lane_results.shape: {len(lane_results)}")
             image_height = frame.shape[0]
             image_width = frame.shape[1]
             occupancy_grid = np.zeros((image_height, image_width))
-            # print(len(lane_results))
-            if len(lane_results) > 1:
-                print("BING BONG")
-            for r in lane_results:
-                # r.show()
-                # print(r.probs)
-                jsons = json.loads(r.tojson())
-                if(len(jsons) != 0):
-                    confidence = jsons[0]['confidence']
-                    print(confidence)
-                # print(confidence)
-                if r.masks is not None:
-                    # print(r.masks.xy[0])
-                    for segment in r.masks.xy:
-                        print(r.boxes.conf)
-                        if(len(segment) != 0):
-                            segment_array = np.array([segment], dtype=np.int32)
-                            
-                            # print(f"image height: {image_height}")
-                            # print(f"image width: {image_width}")
-                            # print(segment[0])
-                            cv2.fillPoly(occupancy_grid, [segment_array], color=(255, 255, 255))
-                        # print("here4b")
-                        
-            if hole_results is not None:
-                for r in hole_results:
-                    if r.boxes is not None:
-                        # print("here4")
-                        for segment in r.boxes.xyxyn:
-                            x_min, y_min, x_max, y_max = segment
-                            vertices = np.array([[x_min*image_width, y_min*image_height], 
-                                                [x_max*image_width, y_min*image_height], 
-                                                [x_max*image_width, y_max*image_height], 
-                                                [x_min*image_width, y_max*image_height]], dtype=np.int32)
-                            print(vertices)
-                            cv2.fillPoly(occupancy_grid, [vertices], color=(0, 0, 0))
+        
+            if r_lane.masks is not None:
+                segment = r_lane.masks.xy[0]
+                if(len(segment) != 0):
+                    segment_array = np.array([segment], dtype=np.int32)
+                    cv2.fillPoly(occupancy_grid, [segment_array], color=(255, 255, 255))    
+            if r_hole is not None:
+                if r_hole.boxes is not None:
+                    for segment in r_hole.boxes.xyxyn:
+                        x_min, y_min, x_max, y_max = segment
+                        vertices = np.array([[x_min*image_width, y_min*image_height], 
+                                            [x_max*image_width, y_min*image_height], 
+                                            [x_max*image_width, y_max*image_height], 
+                                            [x_min*image_width, y_max*image_height]], dtype=np.int32)
+                        cv2.fillPoly(occupancy_grid, [vertices], color=(0, 0, 0))
 
 
             cv2.imshow("Lane Lines", occupancy_grid)
