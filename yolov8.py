@@ -15,26 +15,55 @@ def predict(video_path, lane_model, hole_model=None):
 
     video_path = video_path #make 0 if using webcam
     cap = cv2.VideoCapture(video_path)
-
+    
+    image_width = int(cap.get(cv2.CAP_PROP_FRAME_WIDTH))
+    image_height = int(cap.get(cv2.CAP_PROP_FRAME_HEIGHT))
+    
+    occupancy_grid = np.zeros((image_height, image_width))
+    memory_buffer = np.full((image_height, image_width), 255).astype(np.uint8) #stack with past frames of driveable area (intialize with full)
+    # print(memory_buffer)
+    frame_of_buffer = 0
+    count = 0
 
     while cap.isOpened() and cv2.waitKey(1) & 0xFF != ord("q"):
         success, frame = cap.read()
         
         if success:
+            
+            count += 1
             r_lane = lane_model.predict(frame, conf=0.25)[0] # this makes a prediction on a single frame of video
             r_hole = hole_model.predict(frame, conf=0.25)[0] if hole_model is not None else None
             lane_annotated_frame = r_lane.plot() # 
             hole_annotated_frame = r_hole.plot() if hole_model is not None else None
             
-            image_height = frame.shape[0]
-            image_width = frame.shape[1]
+            # image_height = frame.shape[0]
+            # image_width = frame.shape[1]
             occupancy_grid = np.zeros((image_height, image_width))
+            
         
             if r_lane.masks is not None:
                 segment = r_lane.masks.xy[0]
                 if(len(segment) != 0):
                     segment_array = np.array([segment], dtype=np.int32)
-                    cv2.fillPoly(occupancy_grid, [segment_array], color=(255, 255, 255))    
+                    cv2.fillPoly(occupancy_grid, [segment_array], color=(255, 255, 255))
+                    memory_buffer = occupancy_grid # add the most recent grid as a memory buffer
+                    frame_of_buffer = count
+                    
+            else:
+                # if no detections are made
+                if count - frame_of_buffer < 10: #number 10 can be changed if needed, this is the number of frames between the buffer and the current frame
+                    occupancy_grid = memory_buffer
+                    print(occupancy_grid)
+                    print("BUFFER USED")
+                else:
+                    occupancy_grid.fill(255)
+                    print("FULL OCCUPANCY GRID USED")
+                    
+            '''
+            This can be added to fill occupancy grid when no detections are made
+            else: 
+                occupancy_grid.fill(255)
+            '''
             if r_hole is not None:
                 if r_hole.boxes is not None:
                     for segment in r_hole.boxes.xyxyn:
