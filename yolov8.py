@@ -47,11 +47,12 @@ def predict(video_path, lane_model, hole_model=None):
                     segment_array = np.array([segment], dtype=np.int32)
                     cv2.fillPoly(occupancy_grid, [segment_array], color=(255, 255, 255))
                     memory_buffer = occupancy_grid # add the most recent grid as a memory buffer
-                    frame_of_buffer = count
+                    frame_of_buffer = count #update the frame when the most recent buffer was gathered
                     
             else:
-                # if no detections are made
-                if count - frame_of_buffer < 10: #number 10 can be changed if needed, this is the number of frames between the buffer and the current frame
+                # if no detections are made we can use past detections or a fully filled grid as output
+                if count - frame_of_buffer < 10: 
+                    #number 10 can be changed if needed, this is the number of frames between the buffer and the current frame for it to be relevent
                     occupancy_grid = memory_buffer
                     print(occupancy_grid)
                     print("BUFFER USED")
@@ -108,10 +109,10 @@ def predict(video_path, lane_model, hole_model=None):
 if __name__ == "__main__":
     # Check if the script is run as the main program
     if len(sys.argv) < 3:
-        print("Not enough parameters!! Please enter; ")
-        print("python3 yolov8.py <video_path> <lane_line_model_path> <pot_holes_model_path>")
-        print("or python3 yolov8.py <video_path> <lane_line_model_path>")
-        print("enter 0 for the <video_path> if you are using a webcam device")
+        print("\nNot enough parameters!! Please enter 1 of the 3:\n ")
+        print("1) python3 yolov8.py <video_path> <lane_line_model_path> <pot_holes_model_path>")
+        print("2) python3 yolov8.py <video_path> <lane_line_model_path>")
+        print("3) enter 0 for the <video_path> if you are using a webcam device\n")
         sys.exit(1)
 
     # Extract the command line argument (parameter)
