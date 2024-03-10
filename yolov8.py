@@ -4,6 +4,7 @@ import numpy as np
 import sys
 import matplotlib.pyplot as plt
 import json
+import time
 
 
 
@@ -22,16 +23,16 @@ def predict(video_path, lane_model, hole_model=None):
     occupancy_grid = np.zeros((image_height, image_width))
     memory_buffer = np.full((image_height, image_width), 255).astype(np.uint8) #stack with past frames of driveable area (intialize with full)
     # print(memory_buffer)
-    frame_of_buffer = 0
-    count = 0
-
+    time_of_buffer = 0
+    # count = 0
+    cur_time = time.time()
     while cap.isOpened() and cv2.waitKey(1) & 0xFF != ord("q"):
         success, frame = cap.read()
         
         if success:
             
-            count += 1
-            r_lane = lane_model.predict(frame, conf=0.5)[0] # this makes a prediction on a single frame of video
+            
+            r_lane = lane_model.predict(frame, conf=0.7)[0] # this makes a prediction on a single frame of video
             r_hole = hole_model.predict(frame, conf=0.25)[0] if hole_model is not None else None
             lane_annotated_frame = r_lane.plot() # 
             hole_annotated_frame = r_hole.plot() if hole_model is not None else None
@@ -48,11 +49,13 @@ def predict(video_path, lane_model, hole_model=None):
                     segment_array = np.array([segment], dtype=np.int32)
                     cv2.fillPoly(occupancy_grid, [segment_array], color=(255, 255, 255))
                     memory_buffer = occupancy_grid # add the most recent grid as a memory buffer
-                    frame_of_buffer = count #update the frame when the most recent buffer was gathered
+                     #update the frame when the most recent buffer was gathered
+                    time_of_buffer = time.time()
                     
             else:
                 # if no detections are made we can use past detections or a fully filled grid as output
-                if count - frame_of_buffer < 10: 
+                current_time = time.time()
+                if current_time - time_of_buffer < 2: 
                     #number 10 can be changed if needed, this is the number of frames between the buffer and the current frame for it to be relevent
                     occupancy_grid = memory_buffer
                     # print(occupancy_grid)
