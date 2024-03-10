@@ -5,6 +5,7 @@ import sys
 import matplotlib.pyplot as plt
 import json
 import time
+import math
 
 
 
@@ -24,6 +25,7 @@ def predict(video_path, lane_model, hole_model=None):
     memory_buffer = np.full((image_height, image_width), 255).astype(np.uint8) #stack with past frames of driveable area (intialize with full)
     # print(memory_buffer)
     time_of_buffer = 0
+    buffer_area = 0
     # count = 0
     cur_time = time.time()
     while cap.isOpened() and cv2.waitKey(1) & 0xFF != ord("q"):
@@ -47,15 +49,20 @@ def predict(video_path, lane_model, hole_model=None):
                 if(len(r_lane.masks.xy) != 0):
                     segment = r_lane.masks.xy[0]
                     segment_array = np.array([segment], dtype=np.int32)
-                    cv2.fillPoly(occupancy_grid, [segment_array], color=(255, 255, 255))
+                    cv2.fillPoly(occupancy_grid, [segment_array], color=(255, 0, 0))
+                    
+                    print(occupancy_grid.shape)
                     memory_buffer = occupancy_grid # add the most recent grid as a memory buffer
-                     #update the frame when the most recent buffer was gathered
+                    buffer_area = np.sum(occupancy_grid)//255
+                    #update the frame when the most recent buffer was gathered
                     time_of_buffer = time.time()
                     
             else:
                 # if no detections are made we can use past detections or a fully filled grid as output
+                # 
                 current_time = time.time()
-                if current_time - time_of_buffer < 2: 
+                buffer_time = math.exp(-buffer_area/(image_width*image_height)-0.7)# between 1 and 1/e
+                if current_time - time_of_buffer < buffer_time: 
                     #number 10 can be changed if needed, this is the number of frames between the buffer and the current frame for it to be relevent
                     occupancy_grid = memory_buffer
                     # print(occupancy_grid)
