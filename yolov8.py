@@ -31,7 +31,7 @@ def predict(video_path, lane_model, hole_model=None):
         if success:
             
             count += 1
-            r_lane = lane_model.predict(frame, conf=0.25)[0] # this makes a prediction on a single frame of video
+            r_lane = lane_model.predict(frame, conf=0.5)[0] # this makes a prediction on a single frame of video
             r_hole = hole_model.predict(frame, conf=0.25)[0] if hole_model is not None else None
             lane_annotated_frame = r_lane.plot() # 
             hole_annotated_frame = r_hole.plot() if hole_model is not None else None
@@ -39,11 +39,12 @@ def predict(video_path, lane_model, hole_model=None):
             # image_height = frame.shape[0]
             # image_width = frame.shape[1]
             occupancy_grid = np.zeros((image_height, image_width))
+            # print(len(r_lane.masks.xy))
             
-        
+            
             if r_lane.masks is not None:
-                segment = r_lane.masks.xy[0]
-                if(len(segment) != 0):
+                if(len(r_lane.masks.xy) != 0):
+                    segment = r_lane.masks.xy[0]
                     segment_array = np.array([segment], dtype=np.int32)
                     cv2.fillPoly(occupancy_grid, [segment_array], color=(255, 255, 255))
                     memory_buffer = occupancy_grid # add the most recent grid as a memory buffer
@@ -54,7 +55,7 @@ def predict(video_path, lane_model, hole_model=None):
                 if count - frame_of_buffer < 10: 
                     #number 10 can be changed if needed, this is the number of frames between the buffer and the current frame for it to be relevent
                     occupancy_grid = memory_buffer
-                    print(occupancy_grid)
+                    # print(occupancy_grid)
                     print("BUFFER USED")
                 else:
                     occupancy_grid.fill(255)
@@ -78,7 +79,10 @@ def predict(video_path, lane_model, hole_model=None):
 
             cv2.imshow("Lane Lines", occupancy_grid)
             cv2.imshow("YOLOv8 Inference", lane_annotated_frame)
-            
+            # if(len(r_lane.masks.xy) > 1):
+            #     print(r_lane.boxes.conf[0])
+            #     cv2.waitKey(10000)
+                
             
             
             ##################For Nav Output not necessary for running
