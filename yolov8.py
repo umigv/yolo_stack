@@ -58,8 +58,8 @@ def predict(video_path, lane_model, hole_model=None):
                     cv2.fillPoly(occupancy_grid, [segment_array], color=(255, 0, 0))
                     # func = np.vectorize(num_difference)
                     #total = np.sum(func(occupancy_grid, buffer_area, 0))
-                   # print(total)
-                #attempt at percent thingy line#s 59-62, (not working)
+                    # print(total)
+                    #attempt at percent thingy line#s 59-62, (not working)
                     memory_buffer = occupancy_grid # add the most recent grid as a memory buffer
                     buffer_area = np.sum(occupancy_grid)//255
                     #update the frame when the most recent buffer was gathered
