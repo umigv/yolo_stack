@@ -8,10 +8,16 @@ import time
 import math
 
 
+# def num_difference(x, y, total):
+#     if y != 0 and x == 0:
+#         total += 1
+#     return total
+
+
 
 
 def predict(video_path, lane_model, hole_model=None):
-
+    total = 0
     lane_model = YOLO(lane_model) # specify the model you would like to use
     hole_model = YOLO(hole_model) if hole_model is not None else None
 
@@ -50,8 +56,10 @@ def predict(video_path, lane_model, hole_model=None):
                     segment = r_lane.masks.xy[0]
                     segment_array = np.array([segment], dtype=np.int32)
                     cv2.fillPoly(occupancy_grid, [segment_array], color=(255, 0, 0))
-                    
-                    print(occupancy_grid.shape)
+                    # func = np.vectorize(num_difference)
+                    #total = np.sum(func(occupancy_grid, buffer_area, 0))
+                   # print(total)
+                #attempt at percent thingy line#s 59-62, (not working)
                     memory_buffer = occupancy_grid # add the most recent grid as a memory buffer
                     buffer_area = np.sum(occupancy_grid)//255
                     #update the frame when the most recent buffer was gathered
@@ -71,6 +79,7 @@ def predict(video_path, lane_model, hole_model=None):
                     occupancy_grid.fill(255)
                     print("FULL OCCUPANCY GRID USED")
                     
+
             '''
             This can be added to fill occupancy grid when no detections are made
             else: 
