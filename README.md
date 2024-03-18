@@ -25,7 +25,10 @@ The .pt files used in this project were created using [roloflow](https://app.rob
 
 ## Usage
 
-Provide instructions or examples on how to use your project.
+To test a video using "./yolov8.py" run the terminal command  
+`python3 yolov8.py <video_path> <lane_line_model_path> <pot_holes_model_path>`  
+The pot hole model is optional. You may also run  
+`python3 yolov8.py <video_path> 0 <pot_holes_model_path>` to use a webcam device. This functionality is only compatable on some operating systems and requires set up. Keep in mind the lane line model is intended to detect drivable area, not the lane lines themselves. 
 
 ## YOLOv8.py
 
