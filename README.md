@@ -1,0 +1,34 @@
+# YOLO Code base
+
+## Description
+
+This repository is designed for testing YOLO(You Only Look Once) models on raw videos. Included is a python test file for YOLO.v8 models in "./yolov8.py".
+
+## Documentation
+
+Included in this code base are two sample ".pt" files. These hold the weights for the neural networks that instanciate our YOLO models. 
+One model, found in "./LLOnly180ep.pt", is an instance segmentation YOLOv8 model for detecting drivable area. The other, found in "./potholesonly100epochs.pt", is an object detection YOLOv8 model for detecting potholes. These models are used to create an occupancy grid of complete drivable area for every frame in the input video. For more information on how to use "./yolov8.py", see [Usage](#usage). For a more detailed explanation of the functionality of the code in "./yolov8.py", see [YOLOv8.py](#yolov8py).
+
+## Table of Contents
+
+- [Creating YOLO models](#creating-yolo-models)
+
+- [Usage](#usage)
+
+- [YOLOv8.py](#yolov8py)
+
+- [TL;DR](#TL;DR)
+
+## Creating YOLO models
+
+The .pt files used in this project were created using [roloflow](https://app.roboflow.com/). If given access, you can access the specific roboflow projects [here](https://app.roboflow.com/arv-ysash). Roboflow is a tool that allows the user to annotate images and label their annotations for the purpose of creating CV(Computer Vision) models quickly and easily. To create your own model, create a new project and upload one or multiple training videos. Several suitable training videos can be found in the UMARV dropbox. From there, annotate every single image, then from the leftside dropdown, generate a new version of your model. From there, export the dataset in yolov8 format, copy the code snippet and navigate to the [yolov8 training notebook](https://colab.research.google.com/github/roboflow-ai/notebooks/blob/main/notebooks/train-yolov8-object-detection-on-custom-dataset.ipynb). Run all cells until you get to this one. ![collab cell](image.png).  
+
+## Usage
+
+Provide instructions or examples on how to use your project.
+
+## YOLOv8.py
+
+## TL;DR (Too Long; Didn't Read)
+
+[Project Name] is a [brief description]. For detailed information, refer to the [complete documentation](#documentation).
