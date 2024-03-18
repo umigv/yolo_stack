@@ -2,14 +2,11 @@
 
 ## Description
 
-This repository is designed for testing YOLO(You Only Look Once) models on raw videos. Included is a python test file for YOLO.v8 models in "./yolov8.py".
-
-## Documentation
-
-Included in this code base are two sample ".pt" files. These hold the weights for the neural networks that instanciate our YOLO models. 
-One model, found in "./LLOnly180ep.pt", is an instance segmentation YOLOv8 model for detecting drivable area. The other, found in "./potholesonly100epochs.pt", is an object detection YOLOv8 model for detecting potholes. These models are used to create an occupancy grid of complete drivable area for every frame in the input video. For more information on how to use "./yolov8.py", see [Usage](#usage). For a more detailed explanation of the functionality of the code in "./yolov8.py", see [YOLOv8.py](#yolov8py).
+This repository is designed for testing YOLO(You Only Look Once) models on raw videos. Included is a python test file for YOLO.v8 models in "./yolov8.py". Please update this readme routinely as changes are made to this repository.
 
 ## Table of Contents
+
+- [Documentation](#documentation)
 
 - [Creating YOLO models](#creating-yolo-models)
 
@@ -18,6 +15,13 @@ One model, found in "./LLOnly180ep.pt", is an instance segmentation YOLOv8 model
 - [YOLOv8.py](#yolov8py)
 
 - [TL;DR](#tldr-too-long-didnt-read)
+
+
+## Documentation
+
+Included in this code base are two sample ".pt" files. These hold the weights for the neural networks that instanciate our YOLO models. 
+One model, found in "./LLOnly180ep.pt", is an instance segmentation YOLOv8 model for detecting drivable area. The other, found in "./potholesonly100epochs.pt", is an object detection YOLOv8 model for detecting potholes. These models are used to create an occupancy grid of complete drivable area for every frame in the input video. For more information on how to use "./yolov8.py", see [Usage](#usage). For a more detailed explanation of the functionality of the code in "./yolov8.py", see [YOLOv8.py](#yolov8py).
+
 
 ## Creating YOLO models
 
