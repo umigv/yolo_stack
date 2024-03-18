@@ -1,4 +1,4 @@
-# YOLO Code base
+# YOLO Stack Documentation
 
 ## Description
 
