@@ -17,7 +17,7 @@ One model, found in "./LLOnly180ep.pt", is an instance segmentation YOLOv8 model
 
 - [YOLOv8.py](#yolov8py)
 
-- [TL;DR](#tl;dr)
+- [TL;DR](#tldr-too-long-didnt-read)
 
 ## Creating YOLO models
 
