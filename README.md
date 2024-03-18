@@ -32,6 +32,12 @@ The pot hole model is optional. You may also run
 
 ## YOLOv8.py
 
+This section will give a deeper explaination into the code in "./yolov8.py". The main function is the predict function, which will take a video and create an occupancy grid frame by frame. If using a webcam, it will attempt to detect in real-time, and will skip over frames if processing speed is not fast enough. This function instanciates our yolo models with the .pt files using the YOLO constructor  
+`lane_model = YOLO(lane_model)`  
+We then let our models detect frame by frame in the while loop. The .predict() function returns a list of predictions for every class in the model. Since our models only have one class, this is always a list of length 1. We then use `r_lane.masks.xy` to obtain a polygon of drivable area which we can highlight in our occupancy grid. The same is done with `r_hole.boxes.xyxyn`, but here we subtract from the occupancy grid. A buffer is implemented here, which, given the event that no drivable area is detected, will maintain the occupancy grids values for a certain amount of time, as a function of the occupancy grids highlighted area  
+`buffer_time = math.exp(-buffer_area/(image_width*image_height)-0.7)`  
+This is to ensure that if we do not detect drivable area for a few frames that we will have somewhere to go, and the robot will not stop moving. 
+
 ## TL;DR (Too Long; Didn't Read)
 
-[Project Name] is a [brief description]. For detailed information, refer to the [complete documentation](#documentation).
+It is not that long.
