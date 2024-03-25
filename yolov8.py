@@ -38,8 +38,6 @@ def predict(video_path, lane_model, hole_model=None):
         success, frame = cap.read()
         
         if success:
-            
-            
             r_lane = lane_model.predict(frame, conf=0.7)[0] # this makes a prediction on a single frame of video
             r_hole = hole_model.predict(frame, conf=0.25)[0] if hole_model is not None else None
             lane_annotated_frame = r_lane.plot() # 
