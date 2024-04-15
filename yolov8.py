@@ -62,6 +62,9 @@ def predict(video_path, lane_model, hole_model=None):
                     buffer_area = np.sum(occupancy_grid)//255
                     #update the frame when the most recent buffer was gathered
                     time_of_buffer = time.time()
+                    for i in range(occupancy_grid.shape[1]):
+                        if np.any(occupancy_grid[-200:, i]):
+                            occupancy_grid[-50:, i] = 255
                     
             else:
                 # if no detections are made we can use past detections or a fully filled grid as output
@@ -94,7 +97,7 @@ def predict(video_path, lane_model, hole_model=None):
                         cv2.fillPoly(occupancy_grid, [vertices], color=(0, 0, 0))
 
             cv2.imshow("Lane Lines", occupancy_grid)
-            cv2.imshow("YOLOv8 Inference", lane_annotated_frame)
+            # cv2.imshow("YOLOv8 Inference", lane_annotated_frame)
             # if(len(r_lane.masks.xy) > 1):
             #     print(r_lane.boxes.conf[0])
             #     cv2.waitKey(10000)
