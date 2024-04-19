@@ -105,12 +105,13 @@ def predict(video_path, lane_model, hole_model=None):
                                             [x_min*image_width, y_max*image_height]], dtype=np.int32)
                         cv2.fillPoly(occupancy_grid, [vertices], color=(0, 0, 0))
 
-            occupancy_grid = cv2.resize(occupancy_grid, (image_height//3, image_width//3))
-            frame = cv2.resize(frame, (image_height//3,image_width//3))
+            occupancy_grid = cv2.resize(occupancy_grid, (image_height//2, image_width//2))
+            frame = cv2.resize(frame, (image_height//2,image_width//2))
+            lane_annotated_frame = cv2.resize(lane_annotated_frame, (image_height//2,image_width//2))
 
             cv2.imshow("Lane Lines", occupancy_grid)
             cv2.imshow("frame", frame)
-            #cv2.imshow("YOLOv8 Inference", lane_annotated_frame)
+            cv2.imshow("YOLOv8 Inference", lane_annotated_frame)
 
 
             # if(len(r_lane.masks.xy) > 1):
