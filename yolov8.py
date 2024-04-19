@@ -54,17 +54,26 @@ def predict(video_path, lane_model, hole_model=None):
                     segment = r_lane.masks.xy[0]
                     segment_array = np.array([segment], dtype=np.int32)
                     cv2.fillPoly(occupancy_grid, [segment_array], color=(255, 0, 0))
-                    # func = np.vectorize(num_difference)
-                    #total = np.sum(func(occupancy_grid, buffer_area, 0))
-                    # print(total)
-                    #attempt at percent thingy line#s 59-62, (not working)
-                    memory_buffer = occupancy_grid # add the most recent grid as a memory buffer
+                    current_time = time.time()
+                    difference = current_time - time_of_buffer
+                    switch = np.sum(np.logical_xor(occupancy_grid, memory_buffer))/(np.sum(memory_buffer)/255)
+                    print(switch)
+                    if switch >= 0.8 and difference < 4:
+                        occupancy_grid = memory_buffer
+                        print("FLIPPED")
+                        # cv2.waitKey(3000)
+                    elif switch >= 0.8 and difference < 8:
+                        occupancy_grid.fill(255)
+                    else:
+                        memory_buffer = occupancy_grid # add the most recent grid as a memory buffer
+
                     buffer_area = np.sum(occupancy_grid)//255
                     #update the frame when the most recent buffer was gathered
                     time_of_buffer = time.time()
                     for i in range(occupancy_grid.shape[1]):
                         if np.any(occupancy_grid[-200:, i]):
                             occupancy_grid[-50:, i] = 255
+                    
                     
             else:
                 # if no detections are made we can use past detections or a fully filled grid as output
@@ -97,7 +106,7 @@ def predict(video_path, lane_model, hole_model=None):
                         cv2.fillPoly(occupancy_grid, [vertices], color=(0, 0, 0))
 
             cv2.imshow("Lane Lines", occupancy_grid)
-            # cv2.imshow("YOLOv8 Inference", lane_annotated_frame)
+            cv2.imshow("YOLOv8 Inference", lane_annotated_frame)
             # if(len(r_lane.masks.xy) > 1):
             #     print(r_lane.boxes.conf[0])
             #     cv2.waitKey(10000)
