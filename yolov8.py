@@ -56,7 +56,8 @@ def predict(video_path, lane_model, hole_model=None):
                     cv2.fillPoly(occupancy_grid, [segment_array], color=(255, 0, 0))
                     current_time = time.time()
                     difference = current_time - time_of_buffer
-                    switch = np.sum(np.logical_xor(occupancy_grid, memory_buffer))/(np.sum(memory_buffer)/255)
+                    print(np.logical_not(occupancy_grid, np.logical_not(memory_buffer)))
+                    switch = np.sum(np.logical_and(memory_buffer, np.logical_not(occupancy_grid)))/(np.sum(memory_buffer)/255)
                     print(switch)
                     if switch >= 0.8 and difference < 4:
                         occupancy_grid = memory_buffer
