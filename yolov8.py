@@ -24,6 +24,8 @@ def predict(video_path, lane_model, hole_model=None):
     video_path = video_path #make 0 if using webcam
     cap = cv2.VideoCapture(video_path)
     
+    # cap.set(cv2.CAP_PROP_MODE, cv2.CAP_MODE_GRAY)
+    
     image_width = int(cap.get(cv2.CAP_PROP_FRAME_WIDTH))
     image_height = int(cap.get(cv2.CAP_PROP_FRAME_HEIGHT))
     
@@ -58,19 +60,21 @@ def predict(video_path, lane_model, hole_model=None):
                     difference = current_time - time_of_buffer
                     print(np.logical_not(occupancy_grid, np.logical_not(memory_buffer)))
                     switch = np.sum(np.logical_and(memory_buffer, np.logical_not(occupancy_grid)))/(np.sum(memory_buffer)/255)
-                    print(switch)
+                    print("DIFFERENCE", difference)  
                     if switch >= 0.8 and difference < 4:
                         occupancy_grid = memory_buffer
                         print("FLIPPED")
-                        # cv2.waitKey(3000)
+                        cv2.waitKey(3000)
                     elif switch >= 0.8 and difference < 8:
                         occupancy_grid.fill(255)
+                        cv2.waitKey(3000)
                     else:
                         memory_buffer = occupancy_grid # add the most recent grid as a memory buffer
+                        time_of_buffer = time.time()
 
                     buffer_area = np.sum(occupancy_grid)//255
                     #update the frame when the most recent buffer was gathered
-                    time_of_buffer = time.time()
+                    
                     for i in range(occupancy_grid.shape[1]):
                         if np.any(occupancy_grid[-200:, i]):
                             occupancy_grid[-50:, i] = 255
@@ -80,15 +84,17 @@ def predict(video_path, lane_model, hole_model=None):
                 # if no detections are made we can use past detections or a fully filled grid as output
                 # 
                 current_time = time.time()
-                buffer_time = math.exp(-buffer_area/(image_width*image_height)-0.7)# between 1 and 1/e
+                buffer_time = math.exp(-buffer_area/(image_width*image_height)-0.7)# between 1 and 1/e 
                 if current_time - time_of_buffer < buffer_time: 
                     #number 10 can be changed if needed, this is the number of frames between the buffer and the current frame for it to be relevent
                     occupancy_grid = memory_buffer
                     # print(occupancy_grid)
                     print("BUFFER USED")
+                    cv2.waitKey(3000)
                 else:
                     occupancy_grid.fill(255)
                     print("FULL OCCUPANCY GRID USED")
+                    cv2.waitKey(3000)
                     
 
             '''
