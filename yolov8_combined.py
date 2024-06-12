@@ -40,8 +40,7 @@ def predict(video_path, model_path):
             if results.boxes is not None:
                 boxes = results.boxes.xyxy.tolist()
                 labels = results.boxes.cls.tolist()
-                masks = results.masks.xy
-                if 1.0 in labels:
+                if 1.0 in labels and results.masks is not None:
                     for mask, label in zip(results.masks.xy, labels):
                         if label == 1.0:
                             #GET MASKS AND PLOTTING THEM ON OCCUPANCY GRID
@@ -99,6 +98,8 @@ def predict(video_path, model_path):
             else: # if no detections are made we can use past detections or a fully filled grid as output
                 current_time = time.time()
                 buffer_time = math.exp(-buffer_area/(image_width*image_height)-0.7)# between 1 and 1/e
+                #decrease 0.7 to make it decay slower and have buffers last longer
+                #switch to constant buffer time if needed
                 if current_time - time_of_buffer < buffer_time: 
                     occupancy_grid = memory_buffer
                     print("BUFFER USED")
@@ -116,7 +117,7 @@ def predict(video_path, model_path):
             cv2.imshow("Lane Lines", occupancy_grid)
             cv2.imshow("frame", frame)
             cv2.imshow("YOLOv8 Inference", lane_annotated_frame)
-            cv2.waitKey(10000)
+            
             if cv2.waitKey(1) & 0xFF == ord("q"): # press q to quit the program
                 break
         else:
